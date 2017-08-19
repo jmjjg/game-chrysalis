@@ -1,0 +1,227 @@
+/*global console, Math, $, window, GameStorage, GameSettingsPanel, GameSounds, confirm*/
+/*jslint this*/
+
+/**
+ * Shuffles array in place.
+ * @param {Array} a items The array containing the items.
+ * @url https://stackoverflow.com/a/6274381
+ */
+var shuffle = function(a) {
+	"use strict";
+
+	var j, x, i;
+	for (i = a.length; i; i-=1) {
+		j = Math.floor(Math.random() * i);
+		x = a[i - 1];
+		a[i - 1] = a[j];
+		a[j] = x;
+	}
+};
+
+var onRangeChange = function(event) {
+	"use strict";
+
+	var input = $(event.target),
+		label = input.closest('.form-group').find('label:first'),
+		text = label.html().replace(/\(.+\)$/, '') + ' (' + input.prop('value') + ')';
+	label.html(text);
+	input.title = input.value;
+};
+
+// -----------------------------------------------------------------------------
+
+var GameChrysalis = {
+	player: {},
+	start: null,
+	results: null,
+	settings: null,
+	storages: {results: null, settings: null},
+	panels: {results: null, settings: null},
+	events: [],
+	defaults: {
+		player: 'Quentin',
+		dblclick: false,
+		sound: true,
+		targets: 10,
+		columns: 20,
+		rows: 10
+	},
+	init: function(defaults) {
+		"use strict";
+
+		var i,
+			j,
+			row,
+			td,
+			board = $('<table id="board"></table>'),
+			positions = [];
+
+		if ('object' === typeof defaults && false === Array.isArray(defaults)) {
+			this.defaults = $.extend($.extend({}, this.defaults), $.extend({}, defaults));
+		}
+
+		this.storages.settings = new GameStorage('game-chrysalis-settings', $.extend({}, this.defaults));
+		this.panels.settings = new GameSettingsPanel('#game-settings-panel', this.storages.settings);
+
+		this.storages.results = new GameStorage('game-chrysalis-results');
+		this.events = [];
+
+		$('#status').remove();
+		$('#game').html('');
+
+		this.columns = this.storages.settings.read('columns');
+		this.rows = this.storages.settings.read('rows');
+
+		// Positions des cibles
+		for(i=0;i<this.columns*this.rows;i+=1) {
+			positions.push(i);
+		}
+		shuffle(positions);
+		positions = positions.slice(0, this.storages.settings.read('targets'));
+
+		// Population des cellules
+		for(i=0;i<this.rows;i+=1) {
+			row = $('<tr></tr>');
+			for(j=0;j<this.columns;j+=1) {
+				if(-1 !== positions.indexOf(i*this.columns+j)) {
+					td = $('<td><div class="tile not-found" data-column="' + i + '" data-row="' + j + '"></div></td>');
+				} else {
+					td = $('<td><div class="tile" data-column="' + i + '" data-row="' + j + '"></div></td>');
+				}
+				row.append(td);
+			}
+			board.append(row);
+		}
+
+		$('#game').append(board);
+
+		$('#game').off('click');
+		$('#game').off('dblclick');
+		$('#game').on(
+			true === this.storages.settings.read('dblclick')
+				? 'dblclick'
+				: 'click',
+			GameChrysalis.onClick
+		);
+
+		$('input[type="range"]').off('change');
+		$('input[type="range"]').on('change', onRangeChange);
+		$('input[type="range"]').trigger('change');
+
+		$('input[id="columns"], input[id="rows"]').bind('change', function(event){
+			var targets = $('#targets'),
+				max = $('#columns').val()*$('#rows').val();
+			targets.prop('max', max);
+			targets.val(Math.min(targets.val(), max));
+			targets.trigger('change');
+		});
+
+		this.sounds = new GameSounds(
+			{
+				hit: new Audio('sounds/move.wav'),
+				miss: new Audio('sounds/Paddle.wav'),
+				success: new Audio('sounds/applause.wav')
+			},
+			this.storages.settings
+		);
+
+		this.log({event: 'init', positions: positions, settings: this.storages.settings.read()});
+
+		$( window ).resize( function() {
+			GameChrysalis.resize();
+		} );
+		GameChrysalis.resize();
+
+		this.start = new Date();
+	},
+	log: function(event) {
+		"use strict";
+
+		event = $.extend({event: event.event, timestamp: + new Date()}, event);
+		this.events.push(event);
+	},
+	resize: function() {
+		"use strict";
+
+		var value = Math.min(
+			Math.floor(($('#game').width()-2*$('#toggler').width())/this.columns),
+			Math.floor($('#game').height()/this.rows)
+		);
+
+		$('.tile').css('width', value).css('height', value);
+		this.log({event: 'resize', width: $('#game').width(), height: $('#game').height()});
+	},
+	onGameFinished: function() {
+		"use strict";
+
+		var start = this.start.getTime(),
+			stop = new Date().getTime(),
+			seconds = parseInt((stop - start)/1000, 10),
+			message = '<strong>Bravo ' + this.storages.settings.read('player') + ' !!!</strong><br/>Tu as terminé en ' + seconds + ' secondes.',
+			close = '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
+			status = $('<div id="status" class="alert alert-success alert-dismissible well well-lg fade in" role="alert">' + close + message + '</div>');
+
+		$('body').append(status);
+
+		GameChrysalis.sounds.play('success');
+		GameChrysalis.log({event: 'success'});
+
+		var results = this.storages.results.read(),
+			player = this.storages.settings.read('player');
+
+		results[player] = 'undefined' === typeof results[player]
+			? {'games': {}, 'settings': null}
+			: results[player];
+
+		results[player].settings = this.storages.settings.read();
+		results[player].games[+ this.start] = {
+			start: + this.start,
+			stop: stop,
+			seconds: seconds,
+			events: this.events
+		};
+
+		this.storages.results.write(results);
+console.log(this.storages.results.read());
+	},
+	onClick: function(event) {
+		"use strict";
+
+		var target = $(event.target);
+		event.preventDefault();
+		event.stopPropagation();
+
+		if(0 < $('.tile.not-found').length) {
+			if(true === target.hasClass('not-found')) {
+				GameChrysalis.sounds.play('hit');
+				target.removeClass('not-found');
+				target.addClass('found');
+				GameChrysalis.log({event: 'hit', x: event.pageX, y: event.pageY, column: target.data('column'), row: target.data('row')});
+
+				if(0 === $('.tile.not-found').length) {
+					GameChrysalis.onGameFinished();
+				}
+			} else {
+				GameChrysalis.sounds.play('miss');
+				GameChrysalis.log({event: 'miss', x: event.pageX, y: event.pageY});
+			}
+		}
+
+		return false;
+	},
+	applySettings: function() {
+		"use strict";
+
+		var settings = GameChrysalis.panels.settings.read();
+		this.storages.settings.write(settings);
+		GameChrysalis.init();
+	},
+	reset: function() {
+		"use strict";
+
+		if( confirm( 'Remettre la configuration par défaut ?' ) ) {
+			this.storages.settings.clear();
+			GameChrysalis.init(this.defaults);
+		}
+	}
+};

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Jeu des chrysalides</title>
+		<meta charset="utf-8">
+
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="css/game-chrysalis.css">
+
+		<!--<link rel="stylesheet" href="build/game-chrysalis.min.css">-->
+	</head>
+	<body>
+		<div id="container">
+			<ul id="toggler">
+				<li onclick="return game.views.settings.toggle();" title="Paramètres"><span class="glyphicon glyphicon-wrench"></span></li>
+				<!--<li onclick="return game.views.results.toggle();" title="Historique des parties"><span class="glyphicon glyphicon-exclamation-sign"></span></li>-->
+				<li id="restart" onclick="game.initialize();" title="Recommencer"><span class="glyphicon glyphicon-refresh"></span></li>
+			</ul>
+
+			<div id="game-settings-panel" class="panel panel-primary">
+				<div class="panel-heading">
+					<h2 class="panel-title">Paramètres</h2>
+				</div>
+				<div class="panel-body">
+					<form id="settings" onsubmit="game.views.settings.persist();return false;" class="form-horizontal">
+						<div class="form-group">
+							<label for="player" class="control-label col-sm-6">Joueur</label>
+							<div class="col-sm-6">
+								<input type="text" maxlength="250" id="player" class="form-control">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-6 col-sm-6">
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" id="dblclick"> Double cliquer pour sélectionner
+									</label>
+								</div>
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" id="sound"> Sons
+									</label>
+								</div>
+							</div>
+						</div>
+						<fieldset>
+							<legend>Complexité</legend>
+							<div class="form-group">
+								<label for="columns" class="control-label col-sm-6">Nombre de colonnes</label>
+								<div class="col-sm-6">
+									<input type="range" id="columns" min="1" max="20" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="rows" class="control-label col-sm-6">Nombre de lignes</label>
+								<div class="col-sm-6">
+									<input type="range" id="rows" min="1" max="20" class="form-control">
+								</div>
+							</div>
+						</fieldset>
+						<fieldset>
+							<legend>Cibles</legend>
+							<div class="form-group">
+								<label for="targets" class="control-label col-sm-6">Nombre de cibles</label>
+								<div class="col-sm-6">
+									<input type="range" id="targets" min="1" max="200" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="rows" class="control-label col-sm-6">Équilibre</label>
+								<div class="col-sm-6">
+									<input type="range" id="balance" min="-1" max="1" class="form-control">
+								</div>
+							</div>
+						</fieldset>
+						<div class="form-group buttons">
+							<button type="submit" class="btn btn-success" onclick="game.apply();return false;"><i class="glyphicon glyphicon-ok"></i>&nbsp;Commencer</button>
+							<button type="button" class="btn btn-warning" onclick="game.reset();" title="Remettre les réglages par défaut"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Défauts</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div id="game"></div>
+		</div>
+
+		<script src="src/jquery-3.2.1.min.js"></script>
+		<script src="src/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+		<script src="src/bootstrap.min.js"></script>
+		<script src="src/object.polyfill.js"></script>
+		<script src="src/game-storage.js"></script>
+		<script src="src/game-sounds.js"></script>
+		<script src="src/game-settings-panel.js"></script>
+		<script src="src/game-chrysalis.js"></script>
+
+		<!--<script src="build/game-chrysalis.min.js"></script>-->
+		<script type="text/javascript">
+			var game, defaults = {player: 'Christian', sound: false};
+			$(function(){
+				game = new GameChrysalis();
+				game.initialize(defaults);
+			});
+		</script>
+	</body>
+</html>

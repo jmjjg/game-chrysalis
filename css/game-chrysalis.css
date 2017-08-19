@@ -1,0 +1,106 @@
+/**/
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+legend {
+	font-size: 14px;
+	font-weight: 700;
+}
+label {
+	font-weight: normal;
+}
+.checkbox label {
+	display: block;
+}
+.draggable {
+	cursor: pointer;
+}
+#toggler {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1031;
+	padding: 0;
+	cursor: pointer;
+}
+#toggler li {
+	padding: 0.2em;
+	margin-bottom: 0.4em;
+}
+/**/
+div.panel {
+	position: fixed;
+	z-index: 100;
+	display: none;
+	max-height: 100vh;
+	max-width: calc(100vh - 1.4em);
+	overflow: auto;
+	position: fixed;
+	top: 0;
+	left: 1.4em;
+}
+
+#game-settings-panel {
+	min-width: 40em;
+}
+
+#results-panel {
+	min-width: calc(100vh - 1.4em);
+}
+
+div.buttons {
+	text-align: center;
+	margin: 0.5em 0 0.5em 0;
+}
+/*Resultats*/
+#statistics {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	z-index: 100;
+}
+table td.number {
+	text-align: right;
+}
+table td {
+	white-space: pre;;
+}
+.panel .table {
+	margin-bottom: 0;
+}
+/**/
+.tile {
+}
+.tile.not-found {
+	background: url(../img/Creative-Tail-Objects-binoculars.svg);
+	background-size : cover;
+	cursor: pointer;
+}
+.tile.found {
+	background: url(../img/Creative-Tail-Animal-butterfly.svg);
+	background-size : cover;
+	cursor: auto;
+}
+#game {
+	width: 100vw;
+	height: 100vh;
+}
+#game table {
+	margin: 0 auto;
+	border-collapse: collapse;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+#status {
+	text-align: center;
+	display: block;
+	position: fixed;
+	font-size: 60px;
+	width: 100vw;
+	height: 3.5em;
+	bottom: -20px;
+	opacity: 0.85;
+}
