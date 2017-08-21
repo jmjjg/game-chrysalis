@@ -211,9 +211,10 @@ GameChrysalis.prototype.finished = function() {
 	var start = this.start.getTime(),
 		stop = new Date().getTime(),
 		seconds = parseInt((stop - start)/1000, 10),
-		message = '<strong>Bravo ' + this.models.settings.read('player') + ' !!!</strong><br/>Tu as terminé en ' + seconds + ' secondes.',
+		message = '<div class="message"><strong>Bravo ' + this.models.settings.read('player') + ' !!!</strong><br/>Tu as terminé en ' + seconds + ' secondes.</div>',
 		close = '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
-		status = $('<div id="status" class="alert alert-success alert-dismissible well well-lg fade in" role="alert">' + close + message + '</div>');
+		restart = '<button type="button" class="btn btn-lg btn-success" onclick="game.initialize();return false;"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Rejouer</button>',
+		status = $('<div id="status" class="alert alert-success alert-dismissible well well-lg fade in" role="alert">' + close + message + restart + '</div>');
 
 	$('body').append(status);
 
