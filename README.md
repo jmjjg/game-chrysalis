@@ -42,7 +42,8 @@ Les icones SVG viennent de [Creative Tail](https://www.creativetail.com/), sous
 - [Objects Icons](https://www.creativetail.com/free-objects-icons/)
 
 Les sons viennent du jeu *Consent*, par Jairo Alonso Badillo Bedoya, qui est un
-exemple pour l'IDE et langage de programmation [Gambas](http://gambas.sourceforge.net/).
+exemple pour l'IDE et langage de programmation [Gambas](http://gambas.sourceforge.net/),
+qui est sous license [GNU GPL v. 2](https://tldrlegal.com/license/gnu-general-public-license-v2).
 
 ## Développement
 
