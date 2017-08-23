@@ -29,6 +29,24 @@ module.exports = function( grunt ) {
 
 	grunt.initConfig( {
 		pkg: grunt.file.readJSON( 'package.json' ),
+		complexity: {
+			options: {
+				breakOnErrors: false,
+				errorsOnly: false,
+				hideComplexFunctions: false,
+				broadcast: false,
+				cyclomatic: 4,
+				halstead: 20,
+				maintainability: 100
+			},
+			all: {
+				src: src.internal(),
+				options: {
+					jsLintXML: 'out/complexity/jslint.xml',
+					checkstyleXML: 'out/complexity/checkstyle.xml'
+				}
+			}
+		},
 		cssmin: {
 			target: {
 				files: {
@@ -37,6 +55,14 @@ module.exports = function( grunt ) {
 						'css/bootstrap-theme.min.css',
 						'css/game-chrysalis.css'
 					]
+				}
+			}
+		},
+		jsdoc: {
+			all: {
+				src: src.internal(),
+				options: {
+					destination: 'out/jsdoc/'
 				}
 			}
 		},
@@ -95,8 +121,10 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks('grunt-jsvalidate');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-complexity');
+	grunt.loadNpmTasks('grunt-jsdoc');
 	// @todo https://www.npmjs.com/package/grunt-processhtml
 
-	grunt.registerTask( 'default', [ 'jsvalidate', 'jslint' ] );
+	grunt.registerTask( 'default', [ 'jsvalidate', 'jslint', 'complexity', 'jsdoc' ] );
 	grunt.registerTask( 'release', [ 'default', 'cssmin', 'uglify' ] );
 };

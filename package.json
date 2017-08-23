@@ -3,14 +3,13 @@
   "version": "0.5",
   "devDependencies": {
     "grunt": "",
-    "grunt-complexity": "",
+    "grunt-complexity": "^1.1.0",
     "grunt-contrib-clean": "",
     "grunt-contrib-cssmin": "^2.2.1",
     "grunt-contrib-jshint": "",
     "grunt-contrib-uglify": "^3.0.1",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-jscpd": "",
-    "grunt-jsdoc": "",
+    "grunt-jsdoc": "^2.1.0",
     "grunt-jslint": "^1.1.15",
     "grunt-jsvalidate": "^0.2.2",
     "grunt-mkdir": ""

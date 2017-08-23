@@ -59,4 +59,6 @@ npm install grunt-jsvalidate --save-dev
 npm install grunt-jslint --save-dev
 npm install grunt-contrib-watch --save-dev
 npm install grunt-contrib-cssmin --save-dev
+npm install grunt-complexity --save-dev
+npm install grunt-jsdoc --save-dev
 ```
