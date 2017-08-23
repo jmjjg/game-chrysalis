@@ -1,5 +1,12 @@
 module.exports = function( grunt ) {
-	var src = {
+	/**
+	 * @todo
+	 * grunt-contrib-clean
+	 * grunt-contrib-jshint
+	 * grunt-mkdir
+	 * grunt-processhtml
+	 */
+	var sources = {
 		all: function() {
 			return this.external().concat(this.internal());
 		},
@@ -25,9 +32,8 @@ module.exports = function( grunt ) {
 				'src/game-chrysalis.js'
 			];
 		}
-	};
-
-	grunt.initConfig( {
+	},
+	config = {
 		pkg: grunt.file.readJSON( 'package.json' ),
 		complexity: {
 			options: {
@@ -40,7 +46,7 @@ module.exports = function( grunt ) {
 				maintainability: 100
 			},
 			all: {
-				src: src.internal(),
+				src: sources.internal(),
 				options: {
 					jsLintXML: 'out/complexity/jslint.xml',
 					checkstyleXML: 'out/complexity/checkstyle.xml'
@@ -60,7 +66,7 @@ module.exports = function( grunt ) {
 		},
 		jsdoc: {
 			all: {
-				src: src.internal(),
+				src: sources.internal(),
 				options: {
 					destination: 'out/jsdoc/'
 				}
@@ -68,7 +74,7 @@ module.exports = function( grunt ) {
 		},
 		jslint: {
 			all: {
-				src: src.internal(),
+				src: sources.internal(),
 				directives: {
 					white: true,
 					browser: true,
@@ -91,7 +97,7 @@ module.exports = function( grunt ) {
 			},
 			all: {
 				files: {
-					src: src.all()
+					src: sources.all()
 				}
 			}
 		},
@@ -100,31 +106,25 @@ module.exports = function( grunt ) {
 				banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
 			},
 			build: {
-				src: src.build(),
+				src: sources.build(),
 				dest: 'build/<%= pkg.name %>.min.js'
 			}
 		},
 		watch: {
 			scripts: {
-				files: [ 'index.html' ].concat(src.all()),
-				tasks: [ 'release' ],
+				files: ['index.html'].concat(sources.all()),
+				tasks: ['release'],
 				options: {
 					spawn: false,
 					reload: true
 				}
 			}
 		}
-	} );
+	};
 
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-jslint');
-	grunt.loadNpmTasks('grunt-jsvalidate');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-complexity');
-	grunt.loadNpmTasks('grunt-jsdoc');
-	// @todo https://www.npmjs.com/package/grunt-processhtml
+	grunt.initConfig(config);
+	require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-	grunt.registerTask( 'default', [ 'jsvalidate', 'jslint', 'complexity', 'jsdoc' ] );
-	grunt.registerTask( 'release', [ 'default', 'cssmin', 'uglify' ] );
+	grunt.registerTask('default', ['jsvalidate','jslint','complexity','jsdoc']);
+	grunt.registerTask('release', ['default','cssmin','uglify']);
 };
