@@ -1,5 +1,14 @@
-/*global $*/
 /*jslint this*/
+
+/**
+ * Classe de stockage de données par clé, live et persistant dans localStorage.
+ * Les lectures se font en live et le stockage se fait à la fois en live et dans
+ * le localStorage.
+ *
+ * @constructor
+ * @param {String} name Nom de la clé de stockage dans localStorage
+ * @param {Object} defaults Les valeurs par défaut
+ */
 var GameStorage = function(name, defaults) {
 	"use strict";
 
@@ -11,6 +20,11 @@ var GameStorage = function(name, defaults) {
 	this.data = Object.assign({}, this.defaults, this.data);
 };
 
+/**
+ * Suppression des données stockées.
+ *
+ * @returns {undefined}
+ */
 GameStorage.prototype.clear = function() {
 	"use strict";
 
@@ -18,12 +32,25 @@ GameStorage.prototype.clear = function() {
 	this.data = {};
 };
 
+/**
+ * Persistance dans localStorage des données stockées live.
+ *
+ * @returns {undefined}
+ */
 GameStorage.prototype.persist = function() {
 	"use strict";
 
 	localStorage.setItem(this.name, JSON.stringify(this.data));
 };
 
+/**
+ * Retourne les données stockées live sous une certaine clé ou une valeur par
+ * défaut si celle-ci n'existe pas.
+ *
+ * @param {String} key La clé à lire
+ * @param {*} defaults La valeur par défaut à retourner si la clé n'existe pas
+ * @returns {*}
+ */
 GameStorage.prototype.read = function(key, defaults) {
 	"use strict";
 
@@ -41,6 +68,14 @@ GameStorage.prototype.read = function(key, defaults) {
 	return value;
 };
 
+/**
+ * Stocke une valeur sous une certaine clé ou un objet contenant des clés et des
+ * valeurs en live et persiste ensuite dans localStorage.
+ *
+ * @param {String|Object} key La clé où stocker la valeur ou l'objet à stocker
+ * @param {*} value La valeur à stocker
+ * @returns {undefined}
+ */
 GameStorage.prototype.write = function(key, value) {
 	"use strict";
 
@@ -56,6 +91,11 @@ GameStorage.prototype.write = function(key, value) {
 	this.persist();
 };
 
+/**
+ * Retourne la liste des clés des paramètres par défaut.
+ *
+ * @returns {Array}
+ */
 GameStorage.prototype.keys = function() {
 	"use strict";
 
