@@ -25,9 +25,10 @@ GameSettingsPanel.prototype.read = function() {
 
 	var values = this.store.read(),
 		keys = this.store.keys(),
-		input;
+		input, key;
 
-	$.each(keys, function(idx, key){
+	$.each(keys, function(idx){
+		key = keys[idx];
 		input = $('#'+key);
 
 		if('checkbox' === input.attr('type')) {

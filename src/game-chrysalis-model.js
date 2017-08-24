@@ -8,6 +8,8 @@
  */
 var GameChrysalisModel = function() {
 	"use strict";
+
+	return undefined;
 };
 
 /**

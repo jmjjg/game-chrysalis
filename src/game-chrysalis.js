@@ -36,17 +36,17 @@ var GameChrysalis = function() {
 };
 
 /**
- * Initialisation de la matrice de jeu avec les positions des cibles à afficher.
+ * Initialisation du code HTML de la matrice de jeu avec les positions des cibles
+ * à afficher.
  *
  * @param {Array} positions
  * @returns {undefined}
  */
-GameChrysalis.prototype.initializeBoard = function(positions) {
+GameChrysalis.prototype.initializeGameBoardHtml = function(positions) {
 	"use strict";
 
 	var i, j, row, td, board;
 
-	$('#status').remove();
 	$('#game').html('');
 
 	// Population des cellules
@@ -65,21 +65,39 @@ GameChrysalis.prototype.initializeBoard = function(positions) {
 	}
 
 	$('#game').append(board);
+};
 
-	$('#game').off('click');
-	$('#game').off('dblclick');
-	$('#game').on(
-		true === this.models.settings.read('dblclick')
-			? 'dblclick'
-			: 'click',
-		null,
-		{game: this},
-		this.select
-	);
+/**
+ * Initialisation de la matrice de jeu et des événements associés au jeu.
+ *
+ * @param {Array} positions
+ * @returns {undefined}
+ */
+GameChrysalis.prototype.initializeBoard = function(positions) {
+	"use strict";
 
-	$('input[type="range"]').off('change');
-	$('input[type="range"]').on('change', onRangeChange);
-	$('input[type="range"]').trigger('change');
+	var controller = this;
+
+	$('#status').remove();
+
+	this.initializeGameBoardHtml(positions);
+
+	$('#game')
+		.off('click')
+		.off('dblclick')
+		.on(
+			true === this.models.settings.read('dblclick')
+				? 'dblclick'
+				: 'click',
+			null,
+			{game: this},
+			this.select
+		);
+
+	$('input[type="range"]')
+		.off('change')
+		.on('change', onRangeChange)
+		.trigger('change');
 
 	$('input[id="columns"], input[id="rows"]').bind('change', function() {
 		var targets = $('#targets'),
@@ -89,7 +107,7 @@ GameChrysalis.prototype.initializeBoard = function(positions) {
 		targets.trigger('change');
 	});
 
-	$(window).resize({game: this}, function(){game.redraw();});
+	$(window).resize(function(){controller.redraw();});
 };
 
 
@@ -142,6 +160,12 @@ GameChrysalis.prototype.initialize = function(defaults) {
 	this.start = new Date();
 };
 
+/**
+ * Enregistre un événement du jeu.
+ *
+ * @param {Object} event L'événement à enregistrer
+ * @returns {undefined}
+ */
 GameChrysalis.prototype.log = function(event) {
 	"use strict";
 
@@ -150,6 +174,11 @@ GameChrysalis.prototype.log = function(event) {
 //console.log(event);
 };
 
+/**
+ * Redéfinition de la largeur et de la hauteur des cibles.
+ *
+ * @returns {undefined}
+ */
 GameChrysalis.prototype.redraw = function() {
 	"use strict";
 
@@ -163,6 +192,12 @@ GameChrysalis.prototype.redraw = function() {
 	this.log({event: 'redraw', width: $('#game').width(), height: $('#game').height()});
 };
 
+/**
+ * Appelé lorsqe l'utilisateur sélectionne une cellule.
+ *
+ * @param {Event} event L'événement ayant conduit à la sélection de la cellule
+ * @returns {Boolean}
+ */
 GameChrysalis.prototype.select = function(event) {
 	"use strict";
 
@@ -185,10 +220,13 @@ GameChrysalis.prototype.select = function(event) {
 			game.log({event: 'miss', x: event.pageX, y: event.pageY});
 		}
 	}
-
-	return false;
 };
 
+/**
+ * Appelé lorsque le jeu est terminé avec succès.
+ *
+ * @returns {undefined}
+ */
 GameChrysalis.prototype.finished = function() {
 	"use strict";
 
@@ -224,6 +262,11 @@ GameChrysalis.prototype.finished = function() {
 console.log(this.models.results.read());
 };
 
+/**
+ * Enregistre les paramètres, les applique et démarre une nouvelle partie.
+ *
+ * @returns {undefined}
+ */
 GameChrysalis.prototype.apply = function() {
 	"use strict";
 
@@ -232,6 +275,11 @@ GameChrysalis.prototype.apply = function() {
 	this.initialize();
 };
 
+/**
+ * Remet les paramètres à zéro et démarre une nouvelle partie.
+ *
+ * @returns {undefined}
+ */
 GameChrysalis.prototype.reset = function() {
 	"use strict";
 
