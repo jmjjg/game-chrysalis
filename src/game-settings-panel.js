@@ -1,4 +1,4 @@
-/*global $*/
+/*global $, isObject*/
 /*jslint this*/
 var GameSettingsPanel = function(id, store) {
 	"use strict";
@@ -45,9 +45,7 @@ GameSettingsPanel.prototype.write = function(key, value) {
 
 	var input, type, $this = this;
 
-	if ('object' === typeof key
-		&& false === Array.isArray(key)
-		&& 'undefined' === typeof value) {
+	if (isObject(key) && 'undefined' === typeof value) {
 		$.each(key, function(realKey){
 			$this.write(realKey, key[realKey]);
 		});

@@ -26,9 +26,11 @@ module.exports = function( grunt ) {
 		},
 		internal: function() {
 			return [
+				'src/game-functions.js',
 				'src/game-storage.js',
 				'src/game-sounds.js',
 				'src/game-settings-panel.js',
+				'src/game-chrysalis-model.js',
 				'src/game-chrysalis.js'
 			];
 		}

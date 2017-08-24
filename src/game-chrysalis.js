@@ -1,22 +1,6 @@
-/*global console, Math, $, window, GameStorage, GameSettingsPanel, GameSounds, confirm*/
+/*global console, Math, $, window, GameStorage, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel*/
 /*jslint for this*/
 
-/**
- * Shuffles array in place.
- * @param {Array} a items The array containing the items.
- * @url https://stackoverflow.com/a/6274381
- */
-var shuffle = function(a) {
-	"use strict";
-
-	var j, x, i;
-	for (i = a.length; i; i-=1) {
-		j = Math.floor(Math.random() * i);
-		x = a[i - 1];
-		a[i - 1] = a[j];
-		a[j] = x;
-	}
-};
 
 var onRangeChange = function(event) {
 	"use strict";
@@ -30,6 +14,11 @@ var onRangeChange = function(event) {
 
 // -----------------------------------------------------------------------------
 
+/**
+ * Jeu des crysalides.
+ *
+ * @constructor
+ */
 var GameChrysalis = function() {
 	"use strict";
 
@@ -46,67 +35,22 @@ var GameChrysalis = function() {
 	};
 };
 
-GameChrysalis.prototype.initialize = function(defaults) {
+/**
+ * Initialisation de la matrice de jeu avec les positions des cibles à afficher.
+ *
+ * @param {Array} positions
+ * @returns {undefined}
+ */
+GameChrysalis.prototype.initializeBoard = function(positions) {
 	"use strict";
 
-	var i,
-		j,
-		row,
-		td,
-		board = $('<table id="board"></table>'),
-		positions = [],
-		balance;
-
-	if ('object' === typeof defaults && false === Array.isArray(defaults)) {
-		this.defaults = $.extend(this.defaults, defaults);
-	}
-
-	//@todo m + v: board/game ?
-	this.models = {
-		results: new GameStorage('game-chrysalis-results'),
-		settings: new GameStorage('game-chrysalis-settings', this.defaults)
-	};
-	this.views = {
-		settings: new GameSettingsPanel('#game-settings-panel', this.models.settings)
-	};
-
-	this.sounds = new GameSounds(
-		{
-			hit: new Audio('sounds/move.wav'),
-			miss: new Audio('sounds/Paddle.wav'),
-			success: new Audio('sounds/applause.wav')
-		},
-		this.models.settings
-	);
+	var i, j, row, td, board;
 
 	$('#status').remove();
 	$('#game').html('');
 
-	this.columns = this.models.settings.read('columns');
-	this.rows = this.models.settings.read('rows');
-
-	// Positions des cibles -> @todo function
-	for(i=0;i<this.columns*this.rows;i+=1) {
-		positions.push(i);
-	}
-	balance = parseInt(this.models.settings.read('balance'), 10);
-	if (-1 === balance) {
-		for(i=0;i<this.columns*this.rows;i+=1) {
-			if(i%this.columns<=Math.floor(this.columns/2)) {
-				positions.push(i);
-			}
-		}
-	} else if (1 === balance) {
-		for(i=0;i<this.columns*this.rows;i+=1) {
-			if(i%this.columns>=Math.ceil(this.columns/2)) {
-				positions.push(i);
-			}
-		}
-	}
-	shuffle(positions);
-	positions = positions.slice(0, this.models.settings.read('targets'));
-
 	// Population des cellules
+	board = $('<table id="board"></table>');
 	for(i=0;i<this.rows;i+=1) {
 		row = $('<tr></tr>');
 		for(j=0;j<this.columns;j+=1) {
@@ -145,16 +89,56 @@ GameChrysalis.prototype.initialize = function(defaults) {
 		targets.trigger('change');
 	});
 
+	$(window).resize({game: this}, function(){game.redraw();});
+};
+
+
+/**
+ * Initialisation du jeu.
+ *
+ * @param {Object} defaults Les paramètres par défaut
+ */
+GameChrysalis.prototype.initialize = function(defaults) {
+	"use strict";
+
+	var positions = [];
+
+	if ('object' === typeof defaults && false === Array.isArray(defaults)) {
+		this.defaults = $.extend(this.defaults, defaults);
+	}
+
+	this.models = {
+		game: new GameChrysalisModel(),
+		results: new GameStorage('game-chrysalis-results'),
+		settings: new GameStorage('game-chrysalis-settings', this.defaults)
+	};
+	this.views = {
+		settings: new GameSettingsPanel('#game-settings-panel', this.models.settings)
+	};
+
+	this.sounds = new GameSounds(
+		{
+			hit: new Audio('sounds/move.wav'),
+			miss: new Audio('sounds/Paddle.wav'),
+			success: new Audio('sounds/applause.wav')
+		},
+		this.models.settings
+	);
+
+	this.columns = this.models.settings.read('columns');
+	this.rows = this.models.settings.read('rows');
+	positions = this.models.game.positions(
+		this.columns,
+		this.rows,
+		this.models.settings.read('targets'),
+		this.models.settings.read('balance')
+	);
+
+	this.initializeBoard(positions);
+
 	this.log({event: 'initialize', positions: positions, settings: this.models.settings.read()});
 
-	$( window ).resize(
-		{game: this},
-		function() {
-			game.redraw();
-		}
-	);
 	this.redraw();
-
 	this.start = new Date();
 };
 
@@ -229,8 +213,8 @@ GameChrysalis.prototype.finished = function() {
 		: results[player];
 
 	results[player].settings = this.models.settings.read();
-	results[player].games[+ this.start] = {
-		start: + this.start,
+	results[player].games[+this.start] = {
+		start: +this.start,
 		stop: stop,
 		seconds: seconds,
 		events: this.events
