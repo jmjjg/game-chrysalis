@@ -23,7 +23,7 @@
 		});
 
 		describe('La fonction shuffle', function() {
-			it('doit retourner une copie de l\'array passé en paramètre avec les valeurs randomisées', function() {
+			it('doit retourner une copie de l\'array passée en paramètre avec les valeurs randomisées', function() {
 				var array = [0,1,1,2,3,5,8,13,21],
 					shuffled = shuffle(array),
 					reordered = shuffled.slice().sort(function(a,b){return a-b;});
