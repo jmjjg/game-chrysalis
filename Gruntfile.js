@@ -143,7 +143,7 @@ module.exports = function( grunt ) {
 		watch: {
 			scripts: {
 				files: ['index.html'].concat(sources.all()),
-				tasks: ['release'],
+				tasks: ['minimal'],
 				options: {
 					spawn: false,
 					reload: true
@@ -158,5 +158,6 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask('default', ['jsvalidate','jasmine','jslint','complexity','jsdoc']);
-	grunt.registerTask('release', ['default','cssmin','uglify']);
+	grunt.registerTask('minimal', ['jsvalidate','jasmine']);
+	grunt.registerTask('release', ['minimal','cssmin','uglify']);
 };
