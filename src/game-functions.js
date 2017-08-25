@@ -1,25 +1,27 @@
 /*jslint for*/
 
 /**
- * Shuffles array in place.
- * @param {Array} a items The array containing the items.
+ * Retourne une copie de l'array original randomisé.
  *
- * @see {@link https://stackoverflow.com/a/6274381}
+ * @param {Array} original L'array original
+ * @returns {Array}
+ * @see Original: {@link https://stackoverflow.com/a/6274381}
  */
-var shuffle = function(a) {
+var shuffle = function(original) {
 	"use strict";
 
-	var j, x, i;
-	for (i = a.length; i; i-=1) {
-		j = Math.floor(Math.random() * i);
-		x = a[i - 1];
-		a[i - 1] = a[j];
-		a[j] = x;
+	var j, x, i, result = original.slice();
+	for (i = original.length;i>0;i-=1) {
+		j = Math.floor(Math.random()*i);
+		x = result[i-1];
+		result[i-1] = result[j];
+		result[j] = x;
 	}
+	return result;
 };
 
 /**
- * Vérifie que la variable soit un Objet et pas un Array.
+ * Vérifie que la variable soit bien un Objet, ni NULL ni un Array.
  *
  * @param {*} variable
  * @returns {Boolean}
@@ -27,5 +29,7 @@ var shuffle = function(a) {
 var isObject = function(variable) {
 	"use strict";
 
-	return 'object' === typeof variable && false === Array.isArray(variable);
+	return 'object' === typeof variable
+		&& null !== variable
+		&& false === Array.isArray(variable);
 };

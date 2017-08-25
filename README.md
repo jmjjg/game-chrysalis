@@ -54,6 +54,7 @@ qui est sous license [GNU GPL v. 2](https://tldrlegal.com/license/gnu-general-pu
 sudo npm install -g grunt-cli
 sudo npm install -g grunt-init
 
+npm install load-grunt-tasks --save-dev
 npm install grunt-contrib-uglify --save-dev
 npm install grunt-jsvalidate --save-dev
 npm install grunt-jslint --save-dev
@@ -61,4 +62,8 @@ npm install grunt-contrib-watch --save-dev
 npm install grunt-contrib-cssmin --save-dev
 npm install grunt-complexity --save-dev
 npm install grunt-jsdoc --save-dev
+npm install grunt-contrib-jasmine --save-dev
+npm install angular --save-dev
+npm install angular-mocks --save-dev
+#npm install grunt-template-jasmine-istanbul --save-dev
 ```

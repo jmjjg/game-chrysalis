@@ -57,6 +57,6 @@ GameChrysalisModel.prototype.positions = function(columns, rows, targets, balanc
 		}
 	}
 
-	shuffle(positions);
+	positions = shuffle(positions);
 	return positions.slice(0, targets);
 };

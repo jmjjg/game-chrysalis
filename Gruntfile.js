@@ -1,3 +1,4 @@
+/*global module, require*/
 module.exports = function( grunt ) {
 	/**
 	 * @todo
@@ -8,7 +9,7 @@ module.exports = function( grunt ) {
 	 */
 	var sources = {
 		all: function() {
-			return this.external().concat(this.internal());
+			return this.external().concat(this.internal()).concat(this.specs());
 		},
 		build: function() {
 			return this.dependencies().concat(this.internal());
@@ -33,6 +34,9 @@ module.exports = function( grunt ) {
 				'src/game-chrysalis-model.js',
 				'src/game-chrysalis.js'
 			];
+		},
+		specs: function() {
+			return 'specs/*-spec.js';
 		}
 	},
 	config = {
@@ -63,6 +67,30 @@ module.exports = function( grunt ) {
 						'css/bootstrap-theme.min.css',
 						'css/game-chrysalis.css'
 					]
+				}
+			}
+		},
+		jasmine: {
+			all: {
+				src: sources.build(),
+				options: {
+					specs: sources.specs(),
+					junit: {
+						path: 'out/junit/'
+					},
+					vendor: [
+					  'node_modules/angular/angular.js',
+					  'node_modules/angular-mocks/angular-mocks.js'
+					]/*,
+					template: require('grunt-template-jasmine-istanbul'),
+					templateOptions: {
+						coverage: 'out/coverage/coverage.json',
+						report: [
+							{type: 'html', options: { dir: 'out/coverage' }},
+							{type: 'cobertura', options: { dir: 'out/coverage/cobertura' }},
+							{type: 'text-summary'}
+						]
+					}*/
 				}
 			}
 		},
@@ -125,8 +153,10 @@ module.exports = function( grunt ) {
 	};
 
 	grunt.initConfig(config);
-	require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+	require('load-grunt-tasks')(grunt, {
+	  pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
+	});
 
-	grunt.registerTask('default', ['jsvalidate','jslint','complexity','jsdoc']);
+	grunt.registerTask('default', ['jsvalidate','jasmine','jslint','complexity','jsdoc']);
 	grunt.registerTask('release', ['default','cssmin','uglify']);
 };
