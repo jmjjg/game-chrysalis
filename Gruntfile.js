@@ -81,7 +81,7 @@ module.exports = function( grunt ) {
 					vendor: [
 					  'node_modules/angular/angular.js',
 					  'node_modules/angular-mocks/angular-mocks.js'
-					]/*,
+					],
 					template: require('grunt-template-jasmine-istanbul'),
 					templateOptions: {
 						coverage: 'out/coverage/coverage.json',
@@ -90,7 +90,7 @@ module.exports = function( grunt ) {
 							{type: 'cobertura', options: { dir: 'out/coverage/cobertura' }},
 							{type: 'text-summary'}
 						]
-					}*/
+					}
 				}
 			}
 		},
