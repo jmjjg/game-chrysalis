@@ -1,19 +1,26 @@
 {
-  "name": "game-chrysalis",
-  "version": "0.5",
-  "devDependencies": {
-    "angular": "^1.6.6",
-    "angular-mocks": "^1.6.6",
-    "grunt": "",
-    "grunt-complexity": "^1.1.0",
-    "grunt-contrib-cssmin": "^2.2.1",
-    "grunt-contrib-jasmine": "^1.1.0",
-    "grunt-contrib-uglify": "^3.0.1",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-jsdoc": "^2.1.0",
-    "grunt-jslint": "^1.1.15",
-    "grunt-jsvalidate": "^0.2.2",
-    "grunt-template-jasmine-istanbul": "^0.5.0",
-    "load-grunt-tasks": "^3.5.2"
-  }
+	"name": "game-chrysalis",
+	"version": "0.0.1",
+	"description": "Un jeu sérieux gratuit permettant de tester et d'entraîner des patients présentant un handicap mental atteints de négligence spatiale unilatérale (héminégligence), à destination des ergothérapeutes. ",
+	"devDependencies": {
+		"angular": "^1.6.6",
+		"angular-mocks": "^1.6.6",
+		"grunt": "",
+		"grunt-complexity": "^1.1.0",
+		"grunt-contrib-cssmin": "^2.2.1",
+		"grunt-contrib-jasmine": "^1.1.0",
+		"grunt-contrib-uglify": "^3.0.1",
+		"grunt-contrib-watch": "^1.0.0",
+		"grunt-jsdoc": "^2.1.0",
+		"grunt-jslint": "^1.1.15",
+		"grunt-jsvalidate": "^0.2.2",
+		"grunt-template-jasmine-istanbul": "^0.5.0",
+		"load-grunt-tasks": "^3.5.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jmjjg/game-chrysalis"
+	},
+	"author": "Christian BUFFIN",
+	"license": "MIT"
 }
