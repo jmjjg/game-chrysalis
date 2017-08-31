@@ -42,6 +42,12 @@ module.exports = function( grunt ) {
 	},
 	config = {
 		pkg: grunt.file.readJSON( 'package.json' ),
+		clean: {
+			all: [
+				'build',
+				'out'
+			]
+		},
 		complexity: {
 			options: {
 				breakOnErrors: false,
@@ -167,8 +173,8 @@ module.exports = function( grunt ) {
 	  pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
 	});
 
-	grunt.registerTask('default', ['jsvalidate','jasmine:all','jslint','complexity','jsdoc']);
-	grunt.registerTask('coverage', ['jsvalidate','jasmine:coverage','jslint','complexity','jsdoc']);
-	grunt.registerTask('minimal', ['jsvalidate','jasmine:all']);
+	grunt.registerTask('default', ['clean','jsvalidate','jasmine:all','jslint','complexity','jsdoc']);
+	grunt.registerTask('coverage', ['clean','jsvalidate','jasmine:coverage','jslint','complexity','jsdoc']);
+	grunt.registerTask('minimal', ['clean','jsvalidate','jasmine:all']);
 	grunt.registerTask('release', ['minimal','cssmin','uglify']);
 };

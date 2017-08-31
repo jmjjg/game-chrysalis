@@ -66,4 +66,5 @@ npm install grunt-contrib-jasmine --save-dev
 npm install angular --save-dev
 npm install angular-mocks --save-dev
 npm install grunt-template-jasmine-istanbul --save-dev
+npm install grunt-contrib-clean --save-dev
 ```
