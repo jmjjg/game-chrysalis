@@ -94,13 +94,14 @@
 		<script src="src/game-sounds.js"></script>
 		<script src="src/game-settings-panel.js"></script>
 		<script src="src/game-chrysalis-model.js"></script>
-		<script src="src/game-chrysalis.js"></script>
+		<script src="src/game-chrysalis-view.js"></script>
+		<script src="src/game-chrysalis-controller.js"></script>
 
 		<!--<script src="build/game-chrysalis.min.js"></script>-->
 		<script type="text/javascript">
 			var game, defaults = {player: 'Christian', sound: false};
 			$(function(){
-				game = new GameChrysalis();
+				game = new GameChrysalisController();
 				game.initialize(defaults);
 			});
 		</script>

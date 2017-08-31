@@ -32,7 +32,8 @@ module.exports = function( grunt ) {
 				'src/game-sounds.js',
 				'src/game-settings-panel.js',
 				'src/game-chrysalis-model.js',
-				'src/game-chrysalis.js'
+				'src/game-chrysalis-view.js',
+				'src/game-chrysalis-controller.js'
 			];
 		},
 		specs: function() {

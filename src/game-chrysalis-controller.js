@@ -1,25 +1,12 @@
-/*global console, Math, $, window, GameStorage, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel*/
+/*global console, Math, $, GameStorage, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel, GameChrysalisView*/
 /*jslint for this*/
 
-
-var onRangeChange = function(event) {
-	"use strict";
-
-	var input = $(event.target),
-		label = input.closest('.form-group').find('label:first'),
-		text = label.html().replace(/\(.+\)$/, '') + ' (' + input.prop('value') + ')';
-	label.html(text);
-	input.title = input.value;
-};
-
-// -----------------------------------------------------------------------------
-
 /**
- * Jeu des crysalides.
+ * Contrôleur du jeu des crysalides.
  *
  * @constructor
  */
-var GameChrysalis = function() {
+var GameChrysalisController = function() {
 	"use strict";
 
 	this.start = null;
@@ -36,87 +23,11 @@ var GameChrysalis = function() {
 };
 
 /**
- * Initialisation du code HTML de la matrice de jeu avec les positions des cibles
- * à afficher.
- *
- * @param {Array} positions
- * @returns {undefined}
- */
-GameChrysalis.prototype.initializeGameBoardHtml = function(positions) {
-	"use strict";
-
-	var i, j, row, td, board;
-
-	$('#game').html('');
-
-	// Population des cellules
-	board = $('<table id="board"></table>');
-	for(i=0;i<this.rows;i+=1) {
-		row = $('<tr></tr>');
-		for(j=0;j<this.columns;j+=1) {
-			if(-1 !== positions.indexOf(i*this.columns+j)) {
-				td = $('<td><div class="tile not-found" data-column="' + i + '" data-row="' + j + '"></div></td>');
-			} else {
-				td = $('<td><div class="tile" data-column="' + i + '" data-row="' + j + '"></div></td>');
-			}
-			row.append(td);
-		}
-		board.append(row);
-	}
-
-	$('#game').append(board);
-};
-
-/**
- * Initialisation de la matrice de jeu et des événements associés au jeu.
- *
- * @param {Array} positions
- * @returns {undefined}
- */
-GameChrysalis.prototype.initializeBoard = function(positions) {
-	"use strict";
-
-	var controller = this;
-
-	$('#status').remove();
-
-	this.initializeGameBoardHtml(positions);
-
-	$('#game')
-		.off('click')
-		.off('dblclick')
-		.on(
-			true === this.models.settings.read('dblclick')
-				? 'dblclick'
-				: 'click',
-			null,
-			{game: this},
-			this.select
-		);
-
-	$('input[type="range"]')
-		.off('change')
-		.on('change', onRangeChange)
-		.trigger('change');
-
-	$('input[id="columns"], input[id="rows"]').bind('change', function() {
-		var targets = $('#targets'),
-			max = $('#columns').val()*$('#rows').val();
-		targets.prop('max', max);
-		targets.val(Math.min(targets.val(), max));
-		targets.trigger('change');
-	});
-
-	$(window).resize(function(){controller.redraw();});
-};
-
-
-/**
  * Initialisation du jeu.
  *
  * @param {Object} defaults Les paramètres par défaut
  */
-GameChrysalis.prototype.initialize = function(defaults) {
+GameChrysalisController.prototype.initialize = function(defaults) {
 	"use strict";
 
 	var positions = [];
@@ -131,6 +42,7 @@ GameChrysalis.prototype.initialize = function(defaults) {
 		settings: new GameStorage('game-chrysalis-settings', this.defaults)
 	};
 	this.views = {
+		game: new GameChrysalisView(),
 		settings: new GameSettingsPanel('#game-settings-panel', this.models.settings)
 	};
 
@@ -152,7 +64,11 @@ GameChrysalis.prototype.initialize = function(defaults) {
 		this.models.settings.read('balance')
 	);
 
-	this.initializeBoard(positions);
+	this.views.game.initialize(
+		this,
+		this.models.settings,
+		positions
+	);
 
 	this.log({event: 'initialize', positions: positions, settings: this.models.settings.read()});
 
@@ -166,7 +82,7 @@ GameChrysalis.prototype.initialize = function(defaults) {
  * @param {Object} event L'événement à enregistrer
  * @returns {undefined}
  */
-GameChrysalis.prototype.log = function(event) {
+GameChrysalisController.prototype.log = function(event) {
 	"use strict";
 
 	event = $.extend({event: event.event, timestamp: + new Date()}, event);
@@ -179,7 +95,7 @@ GameChrysalis.prototype.log = function(event) {
  *
  * @returns {undefined}
  */
-GameChrysalis.prototype.redraw = function() {
+GameChrysalisController.prototype.redraw = function() {
 	"use strict";
 
 	var value = Math.min(
@@ -198,26 +114,26 @@ GameChrysalis.prototype.redraw = function() {
  * @param {Event} event L'événement ayant conduit à la sélection de la cellule
  * @returns {Boolean}
  */
-GameChrysalis.prototype.select = function(event) {
+GameChrysalisController.prototype.select = function(event) {
 	"use strict";
 
-	var game = event.data.game, target = $(event.target);
+	var controller = event.data.controller, target = $(event.target);
 	event.preventDefault();
 	event.stopPropagation();
 
 	if(0 < $('.tile.not-found').length) {
 		if(true === target.hasClass('not-found')) {
-			game.sounds.play('hit');
+			controller.sounds.play('hit');
 			target.removeClass('not-found');
 			target.addClass('found');
-			game.log({event: 'hit', x: event.pageX, y: event.pageY, column: target.data('column'), row: target.data('row')});
+			controller.log({event: 'hit', x: event.pageX, y: event.pageY, column: target.data('column'), row: target.data('row')});
 
 			if(0 === $('.tile.not-found').length) {
-				game.finished();
+				controller.finished();
 			}
 		} else {
-			game.sounds.play('miss');
-			game.log({event: 'miss', x: event.pageX, y: event.pageY});
+			controller.sounds.play('miss');
+			controller.log({event: 'miss', x: event.pageX, y: event.pageY});
 		}
 	}
 };
@@ -227,19 +143,14 @@ GameChrysalis.prototype.select = function(event) {
  *
  * @returns {undefined}
  */
-GameChrysalis.prototype.finished = function() {
+GameChrysalisController.prototype.finished = function() {
 	"use strict";
 
 	var start = this.start.getTime(),
 		stop = new Date().getTime(),
-		seconds = parseInt((stop - start)/1000, 10),
-		message = '<div class="message"><strong>Bravo ' + this.models.settings.read('player') + ' !!!</strong><br/>Tu as terminé en ' + seconds + ' secondes.</div>',
-		close = '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
-		restart = '<button type="button" class="btn btn-lg btn-success" onclick="game.initialize();return false;"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Rejouer</button>',
-		status = $('<div id="status" class="alert alert-success alert-dismissible well well-lg fade in" role="alert">' + close + message + restart + '</div>');
+		seconds = parseInt((stop - start)/1000, 10);
 
-	$('body').append(status);
-
+	this.views.game.finished(this.models.settings.read('player'), seconds);
 	this.sounds.play('success');
 	this.log({event: 'success'});
 
@@ -267,7 +178,7 @@ console.log(this.models.results.read());
  *
  * @returns {undefined}
  */
-GameChrysalis.prototype.apply = function() {
+GameChrysalisController.prototype.apply = function() {
 	"use strict";
 
 	var settings = this.views.settings.read();
@@ -280,7 +191,7 @@ GameChrysalis.prototype.apply = function() {
  *
  * @returns {undefined}
  */
-GameChrysalis.prototype.reset = function() {
+GameChrysalisController.prototype.reset = function() {
 	"use strict";
 
 	if( confirm( 'Remettre la configuration par défaut ?' ) ) {
