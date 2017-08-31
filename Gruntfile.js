@@ -2,7 +2,7 @@
 module.exports = function( grunt ) {
 	/**
 	 * @todo
-	 * grunt-contrib-clean
+	 * grunt-contrib-clear
 	 * grunt-contrib-jshint
 	 * grunt-mkdir
 	 * grunt-processhtml
@@ -73,6 +73,15 @@ module.exports = function( grunt ) {
 		},
 		jasmine: {
 			all: {
+				src: sources.build(),
+				options: {
+					specs: sources.specs(),
+					junit: {
+						path: 'out/junit/'
+					}
+				}
+			},
+			coverage: {
 				src: sources.build(),
 				options: {
 					specs: sources.specs(),
@@ -158,7 +167,8 @@ module.exports = function( grunt ) {
 	  pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
 	});
 
-	grunt.registerTask('default', ['jsvalidate','jasmine','jslint','complexity','jsdoc']);
-	grunt.registerTask('minimal', ['jsvalidate','jasmine']);
+	grunt.registerTask('default', ['jsvalidate','jasmine:all','jslint','complexity','jsdoc']);
+	grunt.registerTask('coverage', ['jsvalidate','jasmine:coverage','jslint','complexity','jsdoc']);
+	grunt.registerTask('minimal', ['jsvalidate','jasmine:all']);
 	grunt.registerTask('release', ['minimal','cssmin','uglify']);
 };
