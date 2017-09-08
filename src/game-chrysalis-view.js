@@ -1,4 +1,4 @@
-/*global $, window*/
+/*global $, console, window*/
 /*jslint for*/
 
 var onRangeChange = function(event) {
@@ -16,10 +16,10 @@ var onRangeChange = function(event) {
  *
  * @constructor
  */
-var GameChrysalisView = function() {
+var GameChrysalisView = function(controller) {
 	"use strict";
 
-	return undefined;
+	this.controller = controller;
 };
 
 /**
@@ -31,11 +31,15 @@ var GameChrysalisView = function() {
  * @param {Array} targets La liste des cibles sous forme d'index dans le tableau
  * @returns {undefined}
  */
-GameChrysalisView.prototype.initializeBoard = function(columns, rows, targets) {
+GameChrysalisView.prototype.html = function(columns, rows, targets) {
 	"use strict";
 
 	var i, j, row, td, board;
 
+	this.columns = columns;
+	this.rows = rows;
+
+	$('#status').remove();
 	$('#game').html('');
 
 	// Population des cellules
@@ -44,9 +48,9 @@ GameChrysalisView.prototype.initializeBoard = function(columns, rows, targets) {
 		row = $('<tr></tr>');
 		for(j=0;j<columns;j+=1) {
 			if(-1 !== targets.indexOf(i*columns+j)) {
-				td = $('<td><div class="tile not-found" data-column="' + i + '" data-row="' + j + '"></div></td>');
+				td = $('<td><div class="tile not-found" data-column="' + j + '" data-row="' + i + '"></div></td>');
 			} else {
-				td = $('<td><div class="tile" data-column="' + i + '" data-row="' + j + '"></div></td>');
+				td = $('<td><div class="tile" data-column="' + j + '" data-row="' + i + '"></div></td>');
 			}
 			row.append(td);
 		}
@@ -59,17 +63,15 @@ GameChrysalisView.prototype.initializeBoard = function(columns, rows, targets) {
 /**
  * Initialisation de la matrice de jeu et des événements associés au jeu.
  *
- * @param {type} controller
  * @param {type} settings
  * @param {Array} positions
  * @returns {undefined}
  */
-GameChrysalisView.prototype.initialize = function(controller, settings, positions) {
+GameChrysalisView.prototype.initialize = function(settings, positions) {
 	"use strict";
 
-	$('#status').remove();
-
-	this.initializeBoard(settings.read('columns'), settings.read('rows'), positions);
+	var game = this;
+	this.html(settings.read('columns'), settings.read('rows'), positions);
 
 	$('#game')
 		.off('click')
@@ -79,8 +81,8 @@ GameChrysalisView.prototype.initialize = function(controller, settings, position
 				? 'dblclick'
 				: 'click',
 			null,
-			{controller: controller},
-			controller.select
+			{controller: this.controller},
+			this.controller.select
 		);
 
 	$('input[type="range"]')
@@ -96,9 +98,27 @@ GameChrysalisView.prototype.initialize = function(controller, settings, position
 		targets.trigger('change');
 	});
 
-	$(window).resize(function(){controller.redraw();});
+	$(window).resize(function(){game.redraw();});
 };
 
+/**
+ * Redéfinition de la largeur et de la hauteur des cibles.
+ *
+ * @returns {undefined}
+ */
+GameChrysalisView.prototype.redraw = function() {
+	"use strict";
+
+	var value = Math.min(
+		Math.floor(($('#game').width()-2*$('#toggler').width())/this.columns),
+		Math.floor($('#game').height()/this.rows)
+	);
+	$('.tile').css('width', value).css('height', value);
+
+	$('.tile .order').css('font-size', parseInt(value/2, 10)+'px').css('line-height', value+'px');
+
+	this.controller.log({event: 'redraw', width: $('#game').width(), height: $('#game').height()});
+};
 
 /**
  * Affiche le message lorsqu'une partie est gagnée.
@@ -116,4 +136,32 @@ GameChrysalisView.prototype.finished = function(player, seconds) {
 		status = $('<div id="status" class="alert alert-success alert-dismissible well well-lg fade in" role="alert">' + close + message + restart + '</div>');
 
 	$('body').append(status);
+};
+
+/**
+ * Visualisation d'une partie, affichage de l'ordre dans lequel les cibles ont
+ * été cliquées.
+ *
+ * @param {Object} game La partie à visualiser
+ * @returns {undefined}
+ */
+GameChrysalisView.prototype.view = function(game) {
+	"use strict";
+
+	var hit = 0, event, init = game.events[0];
+
+	this.html(init.settings.columns, init.settings.rows, init.positions);
+
+	$.each(game.events, function(idx){
+		event = game.events[idx];
+		if('hit' === event.event) {
+			hit+=1;
+			$('#board tr:nth-child('+(event.row+1)+') td:nth-child('+(event.column+1)+') div')
+				.removeClass('not-found')
+				.addClass('found')
+				.append($('<div class="order">'+hit+'</div>'));
+		}
+	});
+
+	this.redraw();
 };

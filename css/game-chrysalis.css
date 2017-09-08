@@ -83,6 +83,14 @@ table td {
 	background-size : cover;
 	cursor: auto;
 }
+
+.tile.found div {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	text-align:center;
+	overflow: hidden;
+}
 #game {
 	width: 100vw;
 	height: 100vh;

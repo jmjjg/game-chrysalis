@@ -1,4 +1,4 @@
-/*global console, Math, $, GameStorage, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel, GameChrysalisView*/
+/*global alert, console, Math, $, GameStorage, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel, GameChrysalisView*/
 /*jslint for this*/
 
 /**
@@ -42,7 +42,7 @@ GameChrysalisController.prototype.initialize = function(defaults) {
 		settings: new GameStorage('game-chrysalis-settings', this.defaults)
 	};
 	this.views = {
-		game: new GameChrysalisView(),
+		game: new GameChrysalisView(this),
 		settings: new GameSettingsPanel('#game-settings-panel', this.models.settings)
 	};
 
@@ -55,24 +55,19 @@ GameChrysalisController.prototype.initialize = function(defaults) {
 		this.models.settings
 	);
 
-	this.columns = this.models.settings.read('columns');
-	this.rows = this.models.settings.read('rows');
+	this.events = [];
+
 	positions = this.models.game.positions(
-		this.columns,
-		this.rows,
+		this.models.settings.read('columns'),
+		this.models.settings.read('rows'),
 		this.models.settings.read('targets'),
 		this.models.settings.read('balance')
 	);
 
-	this.views.game.initialize(
-		this,
-		this.models.settings,
-		positions
-	);
-
+	this.views.game.initialize(this.models.settings, positions);
 	this.log({event: 'initialize', positions: positions, settings: this.models.settings.read()});
 
-	this.redraw();
+	this.views.game.redraw();
 	this.start = new Date();
 };
 
@@ -88,24 +83,6 @@ GameChrysalisController.prototype.log = function(event) {
 	event = $.extend({event: event.event, timestamp: + new Date()}, event);
 	this.events.push(event);
 //console.log(event);
-};
-
-/**
- * Redéfinition de la largeur et de la hauteur des cibles.
- *
- * @returns {undefined}
- */
-GameChrysalisController.prototype.redraw = function() {
-	"use strict";
-
-	var value = Math.min(
-		Math.floor(($('#game').width()-2*$('#toggler').width())/this.columns),
-		Math.floor($('#game').height()/this.rows)
-	);
-
-	$('.tile').css('width', value).css('height', value);
-
-	this.log({event: 'redraw', width: $('#game').width(), height: $('#game').height()});
 };
 
 /**
@@ -131,9 +108,9 @@ GameChrysalisController.prototype.select = function(event) {
 			if(0 === $('.tile.not-found').length) {
 				controller.finished();
 			}
-		} else {
+		} else if(true === target.hasClass('tile')) {
 			controller.sounds.play('miss');
-			controller.log({event: 'miss', x: event.pageX, y: event.pageY});
+			controller.log({event: 'miss', x: event.pageX, y: event.pageY, column: target.data('column'), row: target.data('row')});
 		}
 	}
 };
@@ -194,8 +171,28 @@ GameChrysalisController.prototype.apply = function() {
 GameChrysalisController.prototype.reset = function() {
 	"use strict";
 
-	if( confirm( 'Remettre la configuration par défaut ?' ) ) {
+	if(true===confirm('Remettre la configuration par défaut ?')) {
 		this.models.settings.clear();
 		this.initialize(this.defaults);
+	}
+};
+
+/**
+ * Visualisation d'une ancienne partie.
+ *
+ * @param {String} player Le nom du joueur
+ * @param {String} id Le timestamp de la partie
+ * @returns {undefined}
+ */
+GameChrysalisController.prototype.view = function(player, id) {
+	"use strict";
+
+	var results = this.models.results.read(player),
+		game = results.games[id];
+
+	if('undefined' === typeof game) {
+		alert('Impossible de trouver la partie ' + id + ' pour le joueur '+player);
+	} else {
+		this.views.game.view(game);
 	}
 };
