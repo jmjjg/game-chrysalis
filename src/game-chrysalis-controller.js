@@ -60,6 +60,9 @@ GameChrysalisController.prototype.initialize = function(defaults) {
 		this.models.settings
 	);
 
+	this.selections = 0;
+	this.hits = 0;
+	this.misses = 0;
 	this.events = [];
 
 	positions = this.models.game.positions(
@@ -157,8 +160,7 @@ GameChrysalisController.prototype.finished = function() {
 			selections: this.selections,
 			hits: this.hits,
 			misses: this.misses,
-			events: this.events/*,
-			settings: this.models.settings.read()*/
+			events: this.events
 		};
 
 		this.models.results.write(results);
@@ -225,7 +227,8 @@ GameChrysalisController.prototype.view = function(id) {
 	}
 };
 
-GameChrysalisController.prototype.export = function(link, filename) {
+//@todo
+GameChrysalisController.prototype.export2csv = function(link, filename) {
 	"use strict";
 
 	var results = this.models.results.read(),
