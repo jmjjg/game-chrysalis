@@ -22,6 +22,25 @@ var GameChrysalisView = function(controller) {
 	this.controller = controller;
 };
 
+GameChrysalisView.prototype.toggle = function(what) {
+	"use strict";
+
+	var id, show, exception;
+
+	if('results' !== what && 'settings' !== what) {
+		exception = 'Erreur, paramètre invalide dans la fonction GameChrysalisView.prototype.toggle: '+String(what);
+		throw exception;
+	}
+
+	id = $('#game-'+what+'-panel');
+	show = false === $(id).is(":visible");
+	$('.panel').hide();
+	if(true === show) {
+		$(id).show();
+	}
+	return false;
+};
+
 /**
  * Initialisation du code HTML de la matrice de jeu avec les targets des cibles
  * à afficher.
@@ -121,7 +140,7 @@ GameChrysalisView.prototype.redraw = function() {
 };
 
 /**
- * Affiche le message lorsqu'une partie est gagnée.
+ * Affiche le message lorsqu'une partie est terminée (avec succès ou par abandon).
  *
  * @param {String} player Le nom du joueur
  * @param {Integer} seconds Le nombre de secondes mis pour gagner la partie
@@ -130,12 +149,20 @@ GameChrysalisView.prototype.redraw = function() {
 GameChrysalisView.prototype.finished = function(player, seconds) {
 	"use strict";
 
-	var message = '<div class="message"><strong>Bravo ' + player + ' !!!</strong><br/>Tu as terminé en ' + seconds + ' secondes.</div>',
+	var success = 0 === $('.tile.not-found').length,
+		message = ( true === success )
+			? '<div class="message"><strong>Bravo ' + player + ' !!!</strong><br/>Tu as terminé en ' + seconds + ' secondes.</div>'
+			: '<div class="message"><strong>Dommage ' + player + ' .</strong><br/>Tu feras mieux la prochaine fois</div>'
+		,
 		close = '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
 		restart = '<button type="button" class="btn btn-lg btn-success" onclick="game.initialize();return false;"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Rejouer</button>',
-		status = $('<div id="status" class="alert alert-success alert-dismissible well well-lg fade in" role="alert">' + close + message + restart + '</div>');
+		status = $('<div id="status" class="alert ' + (true === success ? 'alert-success' : 'alert-info') + ' alert-dismissible well well-lg fade in" role="alert">' + close + message + restart + '</div>');
 
 	$('body').append(status);
+//@fixme!!! toujours cliquable
+//	$('#game, div.tile')
+//		.off('click')
+//		.off('dblclick');
 };
 
 /**

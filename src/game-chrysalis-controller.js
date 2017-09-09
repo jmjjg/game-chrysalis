@@ -1,4 +1,4 @@
-/*global alert, console, Math, $, GameStorage, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel, GameChrysalisView*/
+/*global alert, console, Date, exportToCsv, Math, $, GameStorage, GameResultsPanel, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel, GameChrysalisView, Object*/
 /*jslint for this*/
 
 /**
@@ -10,6 +10,9 @@ var GameChrysalisController = function() {
 	"use strict";
 
 	this.start = null;
+	this.selections = 0;
+	this.hits = 0;
+	this.misses = 0;
 	this.events = [];
 	this.defaults = {
 		player: 'Quentin',
@@ -43,6 +46,7 @@ GameChrysalisController.prototype.initialize = function(defaults) {
 	};
 	this.views = {
 		game: new GameChrysalisView(this),
+		results: new GameResultsPanel('#game-results-panel', this),
 		settings: new GameSettingsPanel('#game-settings-panel', this.models.settings)
 	};
 
@@ -50,7 +54,8 @@ GameChrysalisController.prototype.initialize = function(defaults) {
 		{
 			hit: new Audio('sounds/move.wav'),
 			miss: new Audio('sounds/Paddle.wav'),
-			success: new Audio('sounds/applause.wav')
+			success: new Audio('sounds/applause.wav'),
+			forfeit: new Audio('sounds/Missed.wav')
 		},
 		this.models.settings
 	);
@@ -69,6 +74,8 @@ GameChrysalisController.prototype.initialize = function(defaults) {
 
 	this.views.game.redraw();
 	this.start = new Date();
+
+	this.views.results.write(this.models.results.read());
 };
 
 /**
@@ -99,7 +106,10 @@ GameChrysalisController.prototype.select = function(event) {
 	event.stopPropagation();
 
 	if(0 < $('.tile.not-found').length) {
+		controller.selections+=1;
+
 		if(true === target.hasClass('not-found')) {
+			controller.hits+=1;
 			controller.sounds.play('hit');
 			target.removeClass('not-found');
 			target.addClass('found');
@@ -109,6 +119,7 @@ GameChrysalisController.prototype.select = function(event) {
 				controller.finished();
 			}
 		} else if(true === target.hasClass('tile')) {
+			controller.misses+=1;
 			controller.sounds.play('miss');
 			controller.log({event: 'miss', x: event.pageX, y: event.pageY, column: target.data('column'), row: target.data('row')});
 		}
@@ -116,7 +127,7 @@ GameChrysalisController.prototype.select = function(event) {
 };
 
 /**
- * Appelé lorsque le jeu est terminé avec succès.
+ * Appelé lorsque le jeu est terminé (avec succès ou par abandon).
  *
  * @returns {undefined}
  */
@@ -125,29 +136,34 @@ GameChrysalisController.prototype.finished = function() {
 
 	var start = this.start.getTime(),
 		stop = new Date().getTime(),
-		seconds = parseInt((stop - start)/1000, 10);
+		seconds = parseInt((stop - start)/1000, 10),
+		success = 0 === $('.tile.not-found').length,
+		eventName = success ? 'success' : 'forfeit',
+		confirmation = 'Réellement terminer la partie ?';
 
-	this.views.game.finished(this.models.settings.read('player'), seconds);
-	this.sounds.play('success');
-	this.log({event: 'success'});
+	if(true === success || true === confirm(confirmation)) {
+		this.views.game.finished(this.models.settings.read('player'), seconds);
 
-	var results = this.models.results.read(),
-		player = this.models.settings.read('player');
+		this.sounds.play(eventName);
+		this.log({event: eventName});
 
-	results[player] = 'undefined' === typeof results[player]
-		? {'games': {}, 'settings': null}
-		: results[player];
+		var results = this.models.results.read();
 
-	results[player].settings = this.models.settings.read();
-	results[player].games[+this.start] = {
-		start: +this.start,
-		stop: stop,
-		seconds: seconds,
-		events: this.events
-	};
+		results[+this.start] = {
+			start: +this.start,
+			stop: stop,
+			seconds: seconds,
+			status: eventName,
+			selections: this.selections,
+			hits: this.hits,
+			misses: this.misses,
+			events: this.events/*,
+			settings: this.models.settings.read()*/
+		};
 
-	this.models.results.write(results);
-console.log(this.models.results.read());
+		this.models.results.write(results);
+		this.views.results.write(this.models.results.read());
+	}
 };
 
 /**
@@ -164,16 +180,29 @@ GameChrysalisController.prototype.apply = function() {
 };
 
 /**
- * Remet les paramètres à zéro et démarre une nouvelle partie.
+ * Efface les données du modèle et démarre une nouvelle partie.
  *
+ * @param {String} what Le modèle à effacer, settings ou results
  * @returns {undefined}
  */
-GameChrysalisController.prototype.reset = function() {
+GameChrysalisController.prototype.reset = function(what) {
 	"use strict";
 
-	if(true===confirm('Remettre la configuration par défaut ?')) {
-		this.models.settings.clear();
-		this.initialize(this.defaults);
+	var exception;
+
+	if('settings' === what) {
+		if(true===confirm('Remettre la configuration par défaut ?')) {
+			this.models.settings.clear();
+			this.initialize(this.defaults);
+		}
+	} else if('results' === what) {
+		if(true===confirm('Réellement effacer l\'historique des parties ?')) {
+			this.models.results.clear();
+			this.initialize();
+		}
+	} else {
+		exception = 'Erreur, paramètre invalide dans la fonction GameChrysalisController.prototype.reset: '+String(what);
+		throw exception;
 	}
 };
 
@@ -184,15 +213,41 @@ GameChrysalisController.prototype.reset = function() {
  * @param {String} id Le timestamp de la partie
  * @returns {undefined}
  */
-GameChrysalisController.prototype.view = function(player, id) {
+GameChrysalisController.prototype.view = function(id) {
 	"use strict";
 
-	var results = this.models.results.read(player),
-		game = results.games[id];
+	var game = this.models.results.read(id);
 
 	if('undefined' === typeof game) {
-		alert('Impossible de trouver la partie ' + id + ' pour le joueur '+player);
+		alert('Impossible de trouver la partie ' + id);
 	} else {
 		this.views.game.view(game);
 	}
+};
+
+GameChrysalisController.prototype.export = function(link, filename) {
+	"use strict";
+
+	var results = this.models.results.read(),
+		rows = [
+			// Ligne d'en-tête
+			[
+				'Joueur',
+				'Date'
+			]
+		],
+		keys = Object.keys(results);
+
+	for(var i=0;i<keys.length;i++) {
+		var key = keys[i],
+			result = results[key],
+			settings = result.events[0].settings,
+			row = [
+				settings.player,
+				new Date(result.start).toLocaleString('fr-FR')
+			];
+		rows.push(row);
+	}
+
+	return exportToCsv(link, rows, filename);
 };

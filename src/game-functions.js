@@ -1,3 +1,4 @@
+/*global $, Blob, window*/
 /*jslint for*/
 
 /**
@@ -32,4 +33,49 @@ var isObject = function(variable) {
 	return 'object' === typeof variable
 		&& null !== variable
 		&& false === Array.isArray(variable);
+};
+
+// Inspiration: https://stackoverflow.com/a/33807762
+// This must be a hyperlink
+/*$("#xx").on('click', function (event) {
+ *
+ *  exportTableToCSV.apply(this, [$('#projectSpreadsheet'), 'export.csv']);
+ *
+ *  // IF CSV, don't do event.preventDefault() or return false
+ *  // We actually need this to be a typical hyperlink
+ } )*;*/
+var exportToCsv = function(link, rows, filename) {
+	"use strict";
+
+    var // Temporary delimiter characters unlikely to be typed by keyboard
+    // This is to avoid accidentally splitting the actual contents
+    tmpColDelim = String.fromCharCode(11), // vertical tab character
+    tmpRowDelim = String.fromCharCode(0), // null character
+
+    // actual delimiter characters for CSV format
+    colDelim = '","',
+    rowDelim = '"\r\n"',
+
+    // Grab text from table into CSV formatted string
+    csv = '"' + rows.map(function (cols) {
+        return cols.map(function (col) {
+            return 'undefined' === typeof col
+				? ''
+				: col.toString().replace(/"/g, '""'); // escape double quotes
+        }).join(tmpColDelim);
+
+    }).join(tmpRowDelim)
+    .split(tmpRowDelim).join(rowDelim)
+    .split(tmpColDelim).join(colDelim) + '"',
+
+    // Data URI
+    csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+
+    if (window.navigator.msSaveBlob) { // IE 10+
+        //alert('IE' + csv);
+        window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), "csvname.csv");
+    }
+    else {
+        $(link).attr({ 'download': filename, 'href': csvData, 'target': '_blank' });
+    }
 };

@@ -13,9 +13,10 @@
 	<body>
 		<div id="container">
 			<ul id="toggler">
-				<li onclick="return game.views.settings.toggle();" title="Paramètres"><span class="glyphicon glyphicon-wrench"></span></li>
-				<!--<li onclick="return game.views.results.toggle();" title="Historique des parties"><span class="glyphicon glyphicon-exclamation-sign"></span></li>-->
+				<li onclick="return game.views.game.toggle('settings');" title="Paramètres"><span class="glyphicon glyphicon-wrench"></span></li>
+				<li onclick="return game.views.game.toggle('results');" title="Historique des parties"><span class="glyphicon glyphicon-exclamation-sign"></span></li>
 				<li id="restart" onclick="game.initialize();" title="Recommencer"><span class="glyphicon glyphicon-refresh"></span></li>
+				<li id="stop" onclick="game.finished();" title="Terminer la partie"><span class="glyphicon glyphicon-floppy-save"></span></li>
 			</ul>
 
 			<div id="game-settings-panel" class="panel panel-primary">
@@ -76,9 +77,43 @@
 						</fieldset>
 						<div class="form-group buttons">
 							<button type="submit" class="btn btn-success" onclick="game.apply();return false;"><i class="glyphicon glyphicon-ok"></i>&nbsp;Commencer</button>
-							<button type="button" class="btn btn-warning" onclick="game.reset();" title="Remettre les réglages par défaut"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Défauts</button>
+							<button type="button" class="btn btn-warning" onclick="game.reset('settings');" title="Remettre les réglages par défaut"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Défauts</button>
 						</div>
 					</form>
+				</div>
+			</div>
+
+			<div id="game-results-panel" class="panel panel-primary">
+				<div class="panel-heading">
+					<h2 class="panel-title">Historique des parties</h2>
+				</div>
+				<div class="panel-body">
+					<p>
+						<a href="#" class="btn btn-success pull-right" download="puzzle-quentin-parties.csv" onclick="return game.export(this,'game-chrysalis-results.csv');">
+							<i class="glyphicon glyphicon-export"></i>&nbsp;Exporter
+						</a>
+
+						<a href="#" class="btn btn-danger pull-right" title="Effacer l'historique des parties" onclick="game.reset('results');return false;">
+							<i class="glyphicon glyphicon-trash"></i>&nbsp;Effacer
+						</a>
+					</p>
+					<table id="results" class="table table-condensed table-striped">
+						<thead>
+							<tr>
+								<th>Joueur</th>
+								<th>Date</th>
+								<th>Durée</th>
+								<th>Statut</th>
+								<th>Cases</th>
+								<th>Pièces</th>
+								<th>Essais</th>
+								<th>Réussite</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
 				</div>
 			</div>
 
@@ -92,6 +127,7 @@
 		<script src="src/game-functions.js"></script>
 		<script src="src/game-storage.js"></script>
 		<script src="src/game-sounds.js"></script>
+		<script src="src/game-results-panel.js"></script>
 		<script src="src/game-settings-panel.js"></script>
 		<script src="src/game-chrysalis-model.js"></script>
 		<script src="src/game-chrysalis-view.js"></script>

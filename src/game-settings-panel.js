@@ -9,17 +9,6 @@ var GameSettingsPanel = function(id, store) {
 	this.write(this.store.read());
 };
 
-GameSettingsPanel.prototype.toggle = function() {
-	"use strict";
-
-	var show = false === $(this.id).is(":visible");
-	$('.panel').hide();
-	if(true === show) {
-		$(this.id).show();
-	}
-	return false;
-};
-
 GameSettingsPanel.prototype.read = function() {
 	"use strict";
 

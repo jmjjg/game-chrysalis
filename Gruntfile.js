@@ -30,6 +30,7 @@ module.exports = function( grunt ) {
 				'src/game-functions.js',
 				'src/game-storage.js',
 				'src/game-sounds.js',
+				'src/game-results-panel.js',
 				'src/game-settings-panel.js',
 				'src/game-chrysalis-model.js',
 				'src/game-chrysalis-view.js',
