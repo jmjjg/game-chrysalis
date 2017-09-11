@@ -149,6 +149,11 @@ GameChrysalisView.prototype.redraw = function() {
 GameChrysalisView.prototype.finished = function(player, seconds) {
 	"use strict";
 
+	$('#game, #game div.tile.not-found')
+		.off('click')
+		.off('dblclick')
+		.addClass('finished');
+
 	var success = 0 === $('.tile.not-found').length,
 		message = ( true === success )
 			? '<div class="message"><strong>Bravo ' + player + ' !!!</strong><br/>Tu as terminé en ' + seconds + ' secondes.</div>'
@@ -159,10 +164,6 @@ GameChrysalisView.prototype.finished = function(player, seconds) {
 		status = $('<div id="status" class="alert ' + (true === success ? 'alert-success' : 'alert-info') + ' alert-dismissible well well-lg fade in" role="alert">' + close + message + restart + '</div>');
 
 	$('body').append(status);
-//@fixme!!! toujours cliquable
-//	$('#game, div.tile')
-//		.off('click')
-//		.off('dblclick');
 };
 
 /**

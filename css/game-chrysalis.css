@@ -35,7 +35,7 @@ div.panel {
 	z-index: 100;
 	display: none;
 	max-height: 100vh;
-	max-width: calc(100vh - 1.4em);
+	max-width: calc(100vw - 1.4em);
 	overflow: auto;
 	position: fixed;
 	top: 0;
@@ -47,7 +47,7 @@ div.panel {
 }
 
 #game-results-panel {
-	min-width: calc(100vh - 1.4em);
+	min-width: calc(100vw - 1.4em);
 }
 
 div.buttons {
@@ -112,4 +112,7 @@ table td {
 	height: 5em;
 	bottom: -20px;
 	opacity: 0.85;
+}
+#game.finished div.not-found {
+	cursor: auto;
 }
