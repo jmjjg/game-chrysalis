@@ -1,145 +1,148 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Jeu des chrysalides</title>
-		<meta charset="utf-8">
+    <head>
+        <title>Jeu des chrysalides</title>
+        <meta charset="utf-8">
 
-		<link rel="stylesheet" href="css/bootstrap.min.css">
-		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-		<link rel="stylesheet" href="css/game-chrysalis.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/game-chrysalis.css">
 
-		<!--<link rel="stylesheet" href="build/game-chrysalis.min.css">-->
-	</head>
-	<body>
-		<div id="container">
-			<ul id="toggler">
-				<li onclick="return game.views.game.toggle('settings');" title="Paramètres"><span class="glyphicon glyphicon-wrench"></span></li>
-				<li onclick="return game.views.game.toggle('results');" title="Historique des parties"><span class="glyphicon glyphicon-exclamation-sign"></span></li>
-				<li id="restart" onclick="game.initialize();" title="Recommencer"><span class="glyphicon glyphicon-refresh"></span></li>
-				<li id="stop" onclick="game.finished();" title="Terminer la partie"><span class="glyphicon glyphicon-floppy-save"></span></li>
-			</ul>
+        <!--<link rel="stylesheet" href="build/game-chrysalis.min.css">-->
+    </head>
+    <body>
+        <div id="container">
+            <ul id="toggler">
+                <li onclick="return game.views.game.toggle('settings');" title="Paramètres"><span class="glyphicon glyphicon-wrench"></span></li>
+                <li onclick="return game.views.game.toggle('results');" title="Historique des parties"><span class="glyphicon glyphicon-exclamation-sign"></span></li>
+                <li id="restart" onclick="game.initialize();" title="Recommencer"><span class="glyphicon glyphicon-refresh"></span></li>
+                <li id="stop" onclick="game.finished();" title="Terminer la partie"><span class="glyphicon glyphicon-floppy-save"></span></li>
+            </ul>
 
-			<div id="game-settings-panel" class="panel panel-primary">
-				<div class="panel-heading">
-					<h2 class="panel-title">Paramètres</h2>
-				</div>
-				<div class="panel-body">
-					<form id="settings" onsubmit="game.views.settings.persist();return false;" class="form-horizontal">
-						<div class="form-group">
-							<label for="player" class="control-label col-sm-6">Joueur</label>
-							<div class="col-sm-6">
-								<input type="text" maxlength="250" id="player" class="form-control">
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-offset-6 col-sm-6">
-								<div class="checkbox">
-									<label>
-										<input type="checkbox" id="dblclick"> Double cliquer pour sélectionner
-									</label>
-								</div>
-								<div class="checkbox">
-									<label>
-										<input type="checkbox" id="sound"> Sons
-									</label>
-								</div>
-							</div>
-						</div>
-						<fieldset>
-							<legend>Complexité</legend>
-							<div class="form-group">
-								<label for="columns" class="control-label col-sm-6">Nombre de colonnes</label>
-								<div class="col-sm-6">
-									<input type="range" id="columns" min="1" max="20" class="form-control">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="rows" class="control-label col-sm-6">Nombre de lignes</label>
-								<div class="col-sm-6">
-									<input type="range" id="rows" min="1" max="20" class="form-control">
-								</div>
-							</div>
-						</fieldset>
-						<fieldset>
-							<legend>Cibles</legend>
-							<div class="form-group">
-								<label for="targets" class="control-label col-sm-6">Nombre de cibles</label>
-								<div class="col-sm-6">
-									<input type="range" id="targets" min="1" max="200" class="form-control">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="rows" class="control-label col-sm-6">Équilibre</label>
-								<div class="col-sm-6">
-									<input type="range" id="balance" min="-1" max="1" class="form-control">
-								</div>
-							</div>
-						</fieldset>
-						<div class="form-group buttons">
-							<button type="submit" class="btn btn-success" onclick="game.apply();return false;"><i class="glyphicon glyphicon-ok"></i>&nbsp;Commencer</button>
-							<button type="button" class="btn btn-warning" onclick="game.reset('settings');" title="Remettre les réglages par défaut"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Défauts</button>
-						</div>
-					</form>
-				</div>
-			</div>
+            <div id="game-settings-panel" class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Paramètres</h2>
+                </div>
+                <div class="panel-body">
+                    <form id="settings" onsubmit="game.views.settings.persist();return false;" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="player" class="control-label col-sm-6">Joueur</label>
+                            <div class="col-sm-6">
+                                <input type="text" maxlength="250" id="player" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-6 col-sm-6">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="dblclick"> Double cliquer pour sélectionner
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="sound"> Sons
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <fieldset>
+                            <legend>Complexité</legend>
+                            <div class="form-group">
+                                <label for="columns" class="control-label col-sm-6">Nombre de colonnes</label>
+                                <div class="col-sm-6">
+                                    <input type="range" id="columns" min="1" max="20" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="rows" class="control-label col-sm-6">Nombre de lignes</label>
+                                <div class="col-sm-6">
+                                    <input type="range" id="rows" min="1" max="20" class="form-control">
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Cibles</legend>
+                            <div class="form-group">
+                                <label for="targets" class="control-label col-sm-6">Nombre de cibles</label>
+                                <div class="col-sm-6">
+                                    <input type="range" id="targets" min="1" max="200" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="rows" class="control-label col-sm-6">Équilibre</label>
+                                <div class="col-sm-6">
+                                    <input type="range" id="balance" min="-1" max="1" class="form-control">
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-group buttons">
+                            <button type="submit" class="btn btn-success" onclick="game.apply();return false;"><i class="glyphicon glyphicon-ok"></i>&nbsp;Commencer</button>
+                            <button type="button" class="btn btn-warning" onclick="game.reset('settings');" title="Remettre les réglages par défaut"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Défauts</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-			<div id="game-results-panel" class="panel panel-primary">
-				<div class="panel-heading">
-					<h2 class="panel-title">Historique des parties</h2>
-				</div>
-				<div class="panel-body">
-					<p>
-						<a href="#" class="btn btn-success pull-right" download="puzzle-quentin-parties.csv" onclick="return game.export2csv(this,'game-chrysalis-results.csv');">
-							<i class="glyphicon glyphicon-export"></i>&nbsp;Exporter
-						</a>
+            <div id="game-results-panel" class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Historique des parties</h2>
+                </div>
+                <div class="panel-body">
+                    <p>
+                        <a href="#" class="btn btn-success pull-right" download="puzzle-quentin-parties.csv" onclick="return game.export2csv(this,'game-chrysalis-results.csv');">
+                            <i class="glyphicon glyphicon-export"></i>&nbsp;Exporter
+                        </a>
 
-						<a href="#" class="btn btn-danger pull-right" title="Effacer l'historique des parties" onclick="game.reset('results');return false;">
-							<i class="glyphicon glyphicon-trash"></i>&nbsp;Effacer
-						</a>
-					</p>
-					<table id="results" class="table table-condensed table-striped">
-						<thead>
-							<tr>
-								<th>Joueur</th>
-								<th>Date</th>
-								<th>Durée</th>
-								<th>Statut</th>
-								<th>Cases</th>
-								<th>Pièces</th>
-								<th>Essais</th>
-								<th>Réussite</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>
-				</div>
-			</div>
+                        <a href="#" class="btn btn-danger pull-right" title="Effacer l'historique des parties" onclick="game.reset('results');return false;">
+                            <i class="glyphicon glyphicon-trash"></i>&nbsp;Effacer
+                        </a>
+                    </p>
+                    <table id="results" class="table table-condensed table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Joueur</th>
+                                <th>Date</th>
+                                <th>Durée</th>
+                                <th>Statut</th>
+                                <th>Cases</th>
+                                <th>Pièces</th>
+                                <th>Sélectionnées</th>
+                                <th>Réussite</th>
+                                <th>Essais</th>
+                                <th>Précision</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-			<div id="game"></div>
-		</div>
+            <div id="game"></div>
+        </div>
 
-		<script src="src/jquery-3.2.1.min.js"></script>
-		<script src="src/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-		<script src="src/bootstrap.min.js"></script>
-		<script src="src/object.polyfill.js"></script>
-		<script src="src/game-functions.js"></script>
-		<script src="src/game-storage.js"></script>
-		<script src="src/game-sounds.js"></script>
-		<script src="src/game-results-panel.js"></script>
-		<script src="src/game-settings-panel.js"></script>
-		<script src="src/game-chrysalis-model.js"></script>
-		<script src="src/game-chrysalis-view.js"></script>
-		<script src="src/game-chrysalis-controller.js"></script>
+        <script src="src/jquery-3.2.1.min.js"></script>
+        <script src="src/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+        <script src="src/bootstrap.min.js"></script>
+        <script src="src/object.polyfill.js"></script>
+        <script src="src/colors.js"></script>
+        <script src="src/game-functions.js"></script>
+        <script src="src/game-storage.js"></script>
+        <script src="src/game-sounds.js"></script>
+        <script src="src/game-results-panel.js"></script>
+        <script src="src/game-settings-panel.js"></script>
+        <script src="src/game-chrysalis-model.js"></script>
+        <script src="src/game-chrysalis-view.js"></script>
+        <script src="src/game-chrysalis-controller.js"></script>
 
-		<!--<script src="build/game-chrysalis.min.js"></script>-->
-		<script type="text/javascript">
-			var game, defaults = {player: 'Christian', sound: false};
-			$(function(){
-				game = new GameChrysalisController();
-				game.initialize(defaults);
-			});
-		</script>
-	</body>
+        <!--<script src="build/game-chrysalis.min.js"></script>-->
+        <script type="text/javascript">
+            var game, defaults = {};
+            $(function(){
+                game = new GameChrysalisController();
+                game.initialize(defaults);
+            });
+        </script>
+    </body>
 </html>

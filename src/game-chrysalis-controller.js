@@ -15,13 +15,13 @@ var GameChrysalisController = function() {
 	this.misses = 0;
 	this.events = [];
 	this.defaults = {
-		player: 'Quentin',
+		player: 'Karine',
 		dblclick: false,
 		sound: true,
 		columns: 20,
 		rows: 10,
-		targets: 10,
-		balance: 0
+		targets: 20,
+		balance: -1
 	};
 };
 
@@ -92,7 +92,6 @@ GameChrysalisController.prototype.log = function(event) {
 
 	event = $.extend({event: event.event, timestamp: + new Date()}, event);
 	this.events.push(event);
-//console.log(event);
 };
 
 /**
@@ -236,19 +235,38 @@ GameChrysalisController.prototype.export2csv = function(link, filename) {
 			// Ligne d'en-tête
 			[
 				'Joueur',
-				'Date'
+				'Date',
+				'Durée',
+				'Statut',
+				'Cases',
+				'Pièces',
+				'Sélectionnées',
+				'Réussite',
+				'Essais',
+				'Précision',
+				'Jeu'
 			]
 		],
 		keys = Object.keys(results);
 
 	for(var i=0;i<keys.length;i++) {
 		var key = keys[i],
-			result = results[key],
-			settings = result.events[0].settings,
+			game = results[key],
+			settings = game.events[0].settings,
 			row = [
 				settings.player,
-				new Date(result.start).toLocaleString('fr-FR')
+				new Date(game.start).toLocaleString('fr-FR'),
+				game.seconds,
+				( 'success' === game.status ? 'Succès' : 'Abandon' ),
+				settings.rows*settings.columns,
+				game.events[0].positions.length,
+				game.hits,
+				parseInt(game.hits/Math.max(game.events[0].positions.length, 1)*100, 10) + ' %',
+				game.selections,
+				parseInt(game.hits/Math.max(game.selections, 1)*100, 10) + ' %',
+				JSON.stringify(game)
 			];
+
 		rows.push(row);
 	}
 

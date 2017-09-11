@@ -175,19 +175,43 @@ GameChrysalisView.prototype.finished = function(player, seconds) {
 GameChrysalisView.prototype.view = function(game) {
 	"use strict";
 
-	var hit = 0, event, init = game.events[0];
+	var start = rgb2hsv(255, 0, 0), stop = rgb2hsv(255, 255, 0),
+		steps = {h: 0, s: 0, v: 0}, hit = 0, event, init = game.events[0],
+		hits = [], hsv, rgb, remaining = init.positions.slice(), idx, target;
 
 	this.html(init.settings.columns, init.settings.rows, init.positions);
+	hits = game.events.filter(function(elmt) {return 'hit' === elmt.event;});
 
-	$.each(game.events, function(idx){
-		event = game.events[idx];
-		if('hit' === event.event) {
-			hit+=1;
-			$('#board tr:nth-child('+(event.row+1)+') td:nth-child('+(event.column+1)+') div')
-				.removeClass('not-found')
-				.addClass('found')
-				.append($('<div class="order">'+hit+'</div>'));
-		}
+	steps.h = (stop.h - start.h)/Math.max(hits.length-1, 1);
+	steps.s = (stop.s - start.s)/Math.max(hits.length-1, 1);
+	steps.v = (stop.v - start.v)/Math.max(hits.length-1, 1);
+
+	// Sélectionnées
+	$.each(hits, function(hit){
+		hsv = {
+			h: (start.h+Math.round(steps.h*hit))%360,
+			s: Math.max(Math.min(start.s+Math.round(steps.s*hit), 100), 0),
+			v: Math.max(Math.min(start.v+Math.round(steps.v*hit), 100), 0)
+		};
+
+		rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
+		event = hits[hit];
+
+		idx = remaining.indexOf(event.row*init.settings.columns+event.column);
+		remaining.splice(idx, 1);
+
+		$('#board tr:nth-child('+(event.row+1)+') td:nth-child('+(event.column+1)+') div')
+			.removeClass('not-found')
+			.addClass('found')
+			.append($('<div class="order" style="background-color: rgb('+rgb[0]+', '+rgb[1]+', '+rgb[2]+');">'+(hit+1)+'</div>'));
+	});
+
+	// Non sélectionnées
+	$.each(remaining, function(idx){
+		target = remaining[idx];
+
+		$('#board tr:nth-child('+(Math.floor(target/init.settings.columns)+1)+') td:nth-child('+((target%init.settings.columns)+1)+') div')
+			.append($('<div class="order" style="background-color: rgba(255,255,255,0.6);"> </div>'));
 	});
 
 	this.redraw();

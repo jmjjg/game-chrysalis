@@ -27,6 +27,7 @@ module.exports = function( grunt ) {
 		},
 		internal: function() {
 			return [
+				'src/colors.js',
 				'src/game-functions.js',
 				'src/game-storage.js',
 				'src/game-sounds.js',

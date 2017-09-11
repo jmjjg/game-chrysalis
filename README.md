@@ -34,6 +34,7 @@ Au nivau technique, il utilise:
 - [jquery](https://jquery.com/)
 - [boostrap](http://getbootstrap.com/)
 - la [prothèse d'émulation (polyfill) pour `Object.assign()` trouvée sur MDN](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Object/assign#Proth%C3%A8se_d%27%C3%A9mulation_(polyfill))
+- les fonctions JavaScript [hsvToRgb de Stephan Schmitz](https://gist.github.com/eyecatchup/9536706) et [rgb2hsv de Mic](https://stackoverflow.com/a/8023734)
 
 Les icones SVG viennent de [Creative Tail](https://www.creativetail.com/), sous
 [license](https://www.creativetail.com/licensing/) [Attribution 4.0 International
