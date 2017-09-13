@@ -1,4 +1,4 @@
-/*global $, Blob, window*/
+/*global $, Array, Blob, Math, String, window*/
 /*jslint for*/
 
 /**
@@ -8,7 +8,7 @@
  * @returns {Array}
  * @see Original: {@link https://stackoverflow.com/a/6274381}
  */
-var shuffle = function(original) {
+var array_shuffle = function(original) {
 	"use strict";
 
 	var j, x, i, result = original.slice();
@@ -27,7 +27,7 @@ var shuffle = function(original) {
  * @param {*} variable
  * @returns {Boolean}
  */
-var isObject = function(variable) {
+var is_object = function(variable) {
 	"use strict";
 
 	return 'object' === typeof variable
@@ -35,16 +35,15 @@ var isObject = function(variable) {
 		&& false === Array.isArray(variable);
 };
 
-// Inspiration: https://stackoverflow.com/a/33807762
-// This must be a hyperlink
-/*$("#xx").on('click', function (event) {
+/**
+ * Convertit une matrice de valeurs au format CSV.
  *
- *  exportTableToCSV.apply(this, [$('#projectSpreadsheet'), 'export.csv']);
+ * @see {@link https://stackoverflow.com/a/33807762}
  *
- *  // IF CSV, don't do event.preventDefault() or return false
- *  // We actually need this to be a typical hyperlink
- } )*;*/
-var exportToCsv = function(link, rows, filename) {
+ * @param {Array} rows Les rangées, contenant des colonnes, contenant des valeurs
+ * @returns {String}
+ */
+var matrix_to_csv = function (rows) {
 	"use strict";
 
     var // Temporary delimiter characters unlikely to be typed by keyboard
@@ -66,16 +65,7 @@ var exportToCsv = function(link, rows, filename) {
 
     }).join(tmpRowDelim)
     .split(tmpRowDelim).join(rowDelim)
-    .split(tmpColDelim).join(colDelim) + '"',
+    .split(tmpColDelim).join(colDelim) + '"';
 
-    // Data URI
-    csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-
-    if (window.navigator.msSaveBlob) { // IE 10+
-        //alert('IE' + csv);
-        window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), "csvname.csv");
-    }
-    else {
-        $(link).attr({ 'download': filename, 'href': csvData, 'target': '_blank' });
-    }
+	return csv;
 };

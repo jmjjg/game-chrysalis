@@ -217,3 +217,28 @@ GameChrysalisView.prototype.view = function(game) {
 
 	this.redraw();
 };
+
+
+// Inspiration: https://stackoverflow.com/a/33807762
+// This must be a hyperlink
+//@todo: dans la vue!!
+/*$("#xx").on('click', function (event) {
+ *
+ *  exportTableToCSV.apply(this, [$('#projectSpreadsheet'), 'export.csv']);
+ *
+ *  // IF CSV, don't do event.preventDefault() or return false
+ *  // We actually need this to be a typical hyperlink
+ } )*;*/
+GameChrysalisView.prototype.export2csv = function(link, rows, filename) {
+	"use strict";
+
+    var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(matrix_to_csv(rows));
+
+    if (window.navigator.msSaveBlob) { // IE 10+
+        //alert('IE' + csv);
+        window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), "csvname.csv");
+    }
+    else {
+        $(link).attr({ 'download': filename, 'href': csvData, 'target': '_blank' });
+    }
+};

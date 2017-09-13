@@ -1,4 +1,4 @@
-/*global shuffle*/
+/*global array_shuffle*/
 /*jslint for*/
 
 /**
@@ -57,6 +57,6 @@ GameChrysalisModel.prototype.positions = function(columns, rows, targets, balanc
 		}
 	}
 
-	positions = shuffle(positions);
+	positions = array_shuffle(positions);
 	return positions.slice(0, targets);
 };

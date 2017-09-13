@@ -1,4 +1,4 @@
-/*global alert, console, Date, exportToCsv, Math, $, GameStorage, GameResultsPanel, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel, GameChrysalisView, Object*/
+/*global alert, console, Date, Math, $, GameStorage, GameResultsPanel, GameSettingsPanel, GameSounds, confirm, GameChrysalisModel, GameChrysalisView, Object*/
 /*jslint for this*/
 
 /**
@@ -270,5 +270,5 @@ GameChrysalisController.prototype.export2csv = function(link, filename) {
 		rows.push(row);
 	}
 
-	return exportToCsv(link, rows, filename);
+	return this.views.game.export2csv(link, rows, filename);
 };

@@ -1,4 +1,4 @@
-/*global $, console, isObject, Math*/
+/*global $, console, Math*/
 /*jslint this*/
 var GameResultsPanel = function(id, controller) {
 	"use strict";

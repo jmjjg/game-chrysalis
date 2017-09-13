@@ -1,3 +1,4 @@
+/*global is_object, JSON, localStorage, Object*/
 /*jslint this*/
 
 /**
@@ -79,11 +80,8 @@ GameStorage.prototype.read = function(key, defaults) {
 GameStorage.prototype.write = function(key, value) {
 	"use strict";
 
-	if('object' === typeof key
-		&&  false === Array.isArray(key)
-		&& 'undefined' === typeof value)
-	{
-		this.data = Object.assign({}, this.data, this.key);
+	if(is_object(key)) {
+		this.data = Object.assign({}, this.data, key);
 	} else {
 		this.data[key] = value;
 	}
